@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Naoya vs Elliot — Fixed Version</title>
+<style>
+  body {
+    margin: 0;
+    background: #0a0a15;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 900px;
+    background: #11172b;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px #000;
+  }
+
+  h1 {
+    text-align: center;
+    letter-spacing: 4px;
+  }
+
+  .vs {
+    color: #ff4b81;
+    font-weight: bold;
+  }
+
+  .fighters {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .card {
+    width: 45%;
+    background: #1a2238;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #000;
+  }
+
+  .name {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  .tag {
+    color: #aaa;
+    font-size: 0.9rem;
+  }
+
+  .ability {
+    margin-top: 10px;
+    padding: 10px;
+    background: #0f1628;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  #simulate-btn, #reset-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  #simulate-btn {
+    background: #ff4b81;
+    color: white;
+  }
+
+  #reset-btn {
+    background: #333;
+    color: white;
+    margin-left: 10px;
+  }
+
+  #log {
+    margin-top: 20px;
+    background: #0f1628;
+    padding: 15px;
+    height: 200px;
+    overflow-y: auto;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+
+  .entry {
+    margin-bottom: 6px;
+  }
+
+  .naoya { color: #5b8cff; }
+  .elliot { color: #ffd166; }
+  .system { color: #ff4b81; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>NAOYA <span class="vs">VS</span> ELLIOT</h1>
+
+  <div class="fighters">
+    <div class="card">
+      <div class="name">Naoya Zen'in</div>
+      <div class="tag">Projection Sorcery • JJK</div>
+      <div class="ability">
+        <b>Signature:</b> 24‑Frame Lock — freezes opponents inside a forced timeline.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="name">Elliot</div>
+      <div class="tag">Blond Strategist • Original</div>
+      <div class="ability">
+        <b>Signature:</b> Golden Read — predicts movements by reading micro‑expressions.
+      </div>
+    </div>
+  </div>
+
+  <button id="simulate-btn">Run Battle</button>
+  <button id="reset-btn">Reset</button>
+
+  <div id="log">
+    <div class="entry system">System: Ready. Press Run Battle.</div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const log = document.getElementById("log");
+  const simBtn = document.getElementById("simulate-btn");
+  const resetBtn = document.getElementById("reset-btn");
+
+  function add(type, text) {
+    const div = document.createElement("div");
+    div.className = "entry " + type;
+    div.textContent = (type === "naoya" ? "Naoya: " :
+                       type === "elliot" ? "Elliot: " :
+                       "System: ") + text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function simulate() {
+    add("system", "Running simulation…");
+
+    const outcomes = ["naoya", "elliot", "draw"];
+    const result = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+    if (result === "naoya") {
+      add("naoya", "Splits the battlefield into 24 frames and blitzes forward.");
+      add("system", "Naoya wins with overwhelming speed.");
+    } else if (result === "elliot") {
+      add("elliot", "Reads the frame pattern and counters perfectly.");
+      add("system", "Elliot wins by prediction mastery.");
+    } else {
+      add("naoya", "Attempts a frame lock.");
+      add("elliot", "Predicts and dodges.");
+      add("system", "Neither gains advantage — it's a draw.");
+    }
+  }
+
+  function reset() {
+    log.innerHTML = "";
+    add("system", "Reset complete. Ready for another battle.");
+  }
+
+  simBtn.addEventListener("click", simulate);
+  resetBtn.addEventListener("click", reset);
+});
+</script>
+
+</body>
+</html>
