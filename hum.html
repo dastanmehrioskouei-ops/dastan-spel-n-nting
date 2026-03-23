@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Naoya vs Elliot – Showdown</title>
+  <style>
+    :root {
+      --naoya-color: #5b8cff;
+      --elliot-color: #ffd166;
+      --bg-dark: #050816;
+      --card-bg: #0b1020;
+      --accent: #ff4b81;
+      --text-main: #f5f5f5;
+      --text-muted: #9ca3af;
+      --glow: 0 0 20px rgba(255, 75, 129, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1a1b3a 0, #050816 55%, #000 100%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .arena {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      border-radius: 24px;
+      padding: 24px 24px 32px;
+      background: linear-gradient(135deg, rgba(255, 75, 129, 0.18), rgba(91, 140, 255, 0.12));
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+    }
+
+    .arena::before,
+    .arena::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.35;
+      z-index: -1;
+    }
+
+    .arena::before {
+      background: var(--naoya-color);
+      top: -80px;
+      left: -60px;
+    }
+
+    .arena::after {
+      background: var(--elliot-color);
+      bottom: -80px;
+      right: -60px;
+    }
+
+    .arena-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title-block h1 {
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-block h1 span.vs {
+      font-size: 1.4rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: var(--glow);
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .mode-pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.55);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .fighters {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .fighter-card {
+      position: relative;
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fighter-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 40%, transparent 60%, rgba(255, 255, 255, 0.06));
+      mix-blend-mode: soft-light;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .fighter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .fighter-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .fighter-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .fighter-tagline {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .fighter-affinity {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .avatar-orb {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 30% 0, #fff, transparent 55%),
+                  radial-gradient(circle at 70% 100%, #fff, transparent 55%);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+    }
+
+    .avatar-orb-inner {
+      position: relative;
+      width: 86%;
+      height: 86%;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.7);
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+      font-weight: 700;
+      text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+    }
+
+    .avatar-orb-inner span {
+      transform: translateY(2px);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      z-index: 1;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.75rem;
+    }
+
+    .stat-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .stat-bar {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .stat-value {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .ability {
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 0.78rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 1;
+    }
+
+    .ability-title {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .ability-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .ability-desc {
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .center-panel {
+      margin-top: 10px;
+      border-radius: 16px;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.85rem;
+    }
+
+    .center-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .round-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .round-status {
+      font-size: 0.9rem;
+    }
+
+    .round-status span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      position: relative;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      background: linear-gradient(135deg, #ff4b81, #ff9f5a);
+      color: #fff;
+      box-shadow: var(--glow);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn:hover::after {
+      opacity: 1;
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: none;
+    }
+
+    .btn-secondary::after {
+      display: none;
+    }
+
+    .energy-orb {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 0, #fff, transparent 55%),
+                  radial-gradient(circle at 70% 100%, #fff, transparent 55%);
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #000;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.7);
+    }
+
+    .energy-orb span {
+      transform: translateY(1px);
+    }
+
+    .log {
+      margin-top: 12px;
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.78rem;
+      max-height: 120px;
+      overflow-y: auto;
+      color: var(--text-muted);
+    }
+
+    .log-entry {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .log-entry span {
+      color: #e5e7eb;
+    }
+
+    .log-entry.naoya span {
+      color: var(--naoya-color);
+    }
+
+    .log-entry.elliot span {
+      color: var(--elliot-color);
+    }
+
+    .log-entry.system span {
+      color: var(--accent);
+    }
+
+    @media (max-width: 800px) {
+      .fighters {
+        grid-template-columns: 1fr;
+      }
+      .arena-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .center-panel {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="arena">
+    <header class="arena-header">
+      <div class="title-block">
+        <h1>
+          NAOYA
+          <span class="vs">VS</span>
+          ELLIOT
+        </h1>
+        <div class="subtitle">Cursed Technique Simulation • Real‑Time Battle Visualizer</div>
+      </div>
+      <div class="mode-pill">
+        <span class="mode-dot"></span>
+        Live Match Engine
+      </div>
+    </header>
+
+    <section class="fighters">
+      <!-- Naoya -->
+      <article class="fighter-card" id="naoya-card">
+        <div class="fighter-header">
+          <div class="fighter-meta">
+            <div class="fighter-name">Naoya Zen'in</div>
+            <div class="fighter-tagline">Projection Sorcery • JJK</div>
+          </div>
+          <div class="avatar-orb" style="box-shadow: 0 0 28px rgba(91, 140, 255, 0.9);">
+            <div class="avatar-orb-inner" style="background: radial-gradient(circle at 30% 0, #5b8cff, #111827); color: #e5e7eb;">
+              <span>N</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fighter-affinity">Speed‑Type • Cursed Technique Specialist</div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Speed</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="naoya" data-stat="speed"
+                   style="background: linear-gradient(90deg, #5b8cff, #22d3ee);"></div>
+            </div>
+            <div class="stat-value">99 / 100</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Technique</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="naoya" data-stat="tech"
+                   style="background: linear-gradient(90deg, #5b8cff, #a855f7);"></div>
+            </div>
+            <div class="stat-value">94 / 100</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Durability</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="naoya" data-stat="dur"
+                   style="background: linear-gradient(90deg, #1e293b, #5b8cff);"></div>
+            </div>
+            <div class="stat-value">78 / 100</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Cursed Energy</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="naoya" data-stat="ce"
+                   style="background: linear-gradient(90deg, #5b8cff, #f97316);"></div>
+            </div>
+            <div class="stat-value">88 / 100</div>
+          </div>
+        </div>
+
+        <div class="ability">
+          <div class="ability-title">Signature Technique</div>
+          <div class="ability-name">Projection Sorcery: 24‑Frame Lock</div>
+          <div class="ability-desc">
+            Freezes the opponent into a 24‑frame timeline. Any wrong move shatters them like a broken animation frame.
+          </div>
+        </div>
+      </article>
+
+      <!-- Elliot -->
+      <article class="fighter-card" id="elliot-card">
+        <div class="fighter-header">
+          <div class="fighter-meta">
+            <div class="fighter-name">Elliot</div>
+            <div class="fighter-tagline">Blond Strategist • Original</div>
+          </div>
+          <div class="avatar-orb" style="box-shadow: 0 0 28px rgba(255, 209, 102, 0.9);">
+            <div class="avatar-orb-inner" style="background: radial-gradient(circle at 30% 0, #ffd166, #111827); color: #1f2933;">
+              <span>E</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fighter-affinity">Tactical‑Type • Adaptive Combatant</div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Speed</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="elliot" data-stat="speed"
+                   style="background: linear-gradient(90deg, #ffd166, #f97316);"></div>
+            </div>
+            <div class="stat-value">86 / 100</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Technique</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="elliot" data-stat="tech"
+                   style="background: linear-gradient(90deg, #22c55e, #a3e635);"></div>
+            </div>
+            <div class="stat-value">92 / 100</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Durability</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="elliot" data-stat="dur"
+                   style="background: linear-gradient(90deg, #1e293b, #22c55e);"></div>
+            </div>
+            <div class="stat-value">82 / 100</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Focus</div>
+            <div class="stat-bar">
+              <div class="stat-fill" data-fighter="elliot" data-stat="ce"
+                   style="background: linear-gradient(90deg, #ffd166, #22c55e);"></div>
+            </div>
+            <div class="stat-value">91 / 100</div>
+          </div>
+        </div>
+
+        <div class="ability">
+          <div class="ability-title">Signature Technique</div>
+          <div class="ability-name">Golden Read: Future Lines</div>
+          <div class="ability-desc">
+            Predicts incoming moves by reading micro‑expressions and cursed energy flow, rewriting his own next action in real time.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="center-panel">
+      <div class="center-left">
+        <div class="round-label">Simulation State</div>
+        <div class="round-status">
+          Current outcome: <span id="outcome-label">Balanced • Any mistake decides it</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <button class="btn-secondary" id="reset-btn">Reset</button>
+        <button class="btn" id="simulate-btn">
+          Run Battle
+        </button>
+        <div class="energy-orb" id="intensity-orb">
+          <span>1x</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="log" id="battle-log">
+      <div class="log-entry system">
+        <span>System</span>: Battle engine initialized. Press “Run Battle” to simulate Naoya vs Elliot.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const statsConfig = {
+      naoya: { speed: 0.99, tech: 0.94, dur: 0.78, ce: 0.88 },
+      elliot: { speed: 0.86, tech: 0.92, dur: 0.82, ce: 0.91 }
+    };
+
+    const fills = document.querySelectorAll(".stat-fill");
+    const simulateBtn = document.getElementById("simulate-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const log = document.getElementById("battle-log");
+    const outcomeLabel = document.getElementById("outcome-label");
+    const intensityOrb = document.getElementById("intensity-orb");
+
+    let intensity = 1;
+
+    function animateStats() {
+      fills.forEach(fill => {
+        const fighter = fill.dataset.fighter;
+        const stat = fill.dataset.stat;
+        const value = statsConfig[fighter][stat] || 0;
+        requestAnimationFrame(() => {
+          fill.style.transform = "scaleX(" + value + ")";
+        });
+      });
+    }
+
+    function addLogEntry(type, text) {
+      const entry = document.createElement("div");
+      entry.className = "log-entry " + type;
+      entry.innerHTML = "<span>" + (type === "naoya" ? "Naoya" :
+                                    type === "elliot" ? "Elliot" :
+                                    "System") + "</span>: " + text;
+      log.appendChild(entry);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function randomChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function computeOutcome() {
+      const n = statsConfig.naoya;
+      const e = statsConfig.elliot;
+
+      const naoyaScore =
+        n.speed * 1.25 +
+        n.tech * 1.1 +
+        n.dur * 0.9 +
+        n.ce * 1.0;
+
+      const elliotScore =
+        e.speed * 1.0 +
+        e.tech * 1.25 +
+        e.dur * 1.0 +
+        e.ce * 1.1;
+
+      const swing = (Math.random() - 0.5) * 0.18 * intensity;
+      const diff = (naoyaScore - elliotScore) + swing;
+
+      if (diff > 0.4) return "naoya";
+      if (diff < -0.4) return "elliot";
+      return "balanced";
+    }
+
+    function describeExchange(outcome) {
+      const naoyaLines = [
+        "splits the battlefield into 24 frames, forcing Elliot to move on his timing.",
+        "appears behind Elliot mid‑step, turning the world into a stuttering slideshow.",
+        "uses Projection Sorcery to tag multiple afterimages, collapsing them into one lethal strike."
+      ];
+      const elliotLines = [
+        "reads the frame pattern and steps into the one Naoya left unguarded.",
+        "lets the blond hair flicker like a decoy while his real attack comes from below.",
+        "rewrites his own stance mid‑swing, turning Naoya’s perfect read into a whiff."
+      ];
+      const clashLines = [
+        "Cursed energy cracks the air like glass as both techniques collide.",
+        "The arena bends—time, focus, and intent all stacked in a single heartbeat.",
+        "For a moment, neither moves. Every possible future is loaded, waiting to render."
+      ];
+
+      if (outcome === "naoya") {
+        return [
+          randomChoice(clashLines),
+          "<span>Naoya</span> " + randomChoice(naoyaLines),
+          "Elliot’s read comes a frame too late—the simulation flags Naoya as the victor."
+        ];
+      } else if (outcome === "elliot") {
+        return [
+          randomChoice(clashLines),
+          "<span>Elliot</span> " + randomChoice(elliotLines),
+          "Naoya’s Projection Sorcery desyncs for a moment—just enough for Elliot to steal the win."
+        ];
+      } else {
+        return [
+          randomChoice(clashLines),
+          "<span>Naoya</span> " + randomChoice(naoyaLines),
+          "<span>Elliot</span> " + randomChoice(elliotLines),
+          "The engine can’t lock a winner—this matchup stays razor‑even at this intensity."
+        ];
+      }
+    }
+
+    function updateOutcomeLabel(outcome) {
+      if (outcome === "naoya") {
+        outcomeLabel.textContent = "Naoya edges out with raw speed and cursed precision.";
+      } else if (outcome === "elliot") {
+        outcomeLabel.textContent = "Elliot wins by out‑reading the timeline itself.";
+      } else {
+        outcomeLabel.textContent = "Balanced • Any mistake decides it";
+      }
+    }
+
+    function runBattle() {
+      addLogEntry("system", "Running high‑intensity simulation at " + intensity.toFixed(1) + "x…");
+      const outcome = computeOutcome();
+      const lines = describeExchange(outcome);
+
+      lines.forEach(line => {
+        if (line.startsWith("<span>Naoya")) {
+          addLogEntry("naoya", line.replace("<span>Naoya</span> ", ""));
+        } else if (line.startsWith("<span>Elliot")) {
+          addLogEntry("elliot", line.replace("<span>Elliot</span> ", ""));
+        } else if (line.startsWith("The engine") || line.includes("victor") || line.includes("steal the win")) {
+          addLogEntry("system", line);
+        } else {
+          addLogEntry("system", line);
+        }
+      });
+
+      updateOutcomeLabel(outcome);
+    }
+
+    function resetBattle() {
+      log.innerHTML = "";
+      addLogEntry("system", "Battle engine reset. Stats re‑synced. Press “Run Battle” to simulate again.");
+      outcomeLabel.textContent = "Balanced • Any mistake decides it";
+      intensity = 1;
+      intensityOrb.querySelector("span").textContent = "1x";
+    }
+
+    function cycleIntensity() {
+      const levels = [1, 1.5, 2, 3];
+      const currentIndex = levels.indexOf(intensity);
+      const nextIndex = (currentIndex + 1) % levels.length;
+      intensity = levels[nextIndex];
+      intensityOrb.querySelector("span").textContent = intensity + "x";
+      addLogEntry("system", "Simulation intensity set to " + intensity.toFixed(1) + "x.");
+    }
+
+    simulateBtn.addEventListener("click", runBattle);
+    resetBtn.addEventListener("click", resetBattle);
+    intensityOrb.addEventListener("click", cycleIntensity);
+
+    animateStats();
+  </script>
+</body>
+</html>
