@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Naoya vs Elliot — Playable Fight</title>
+<style>
+  body {
+    margin: 0;
+    background: #0a0a15;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+
+  #game {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: #11172b;
+  }
+
+  .fighter {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+  }
+
+  #naoya {
+    background: #5b8cff;
+  }
+
+  #elliot {
+    background: #ffd166;
+    color: black;
+  }
+
+  .hpbar {
+    position: absolute;
+    top: 10px;
+    height: 20px;
+    border-radius: 6px;
+    background: red;
+  }
+
+  #naoya-hp {
+    left: 10px;
+    width: 200px;
+  }
+
+  #elliot-hp {
+    right: 10px;
+    width: 200px;
+  }
+
+  #msg {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font-size: 3rem;
+    color: white;
+    display: none;
+  }
+</style>
+</head>
+
+<body>
+<div id="game">
+  <div id="naoya" class="fighter">N</div>
+  <div id="elliot" class="fighter">E</div>
+
+  <div id="naoya-hp" class="hpbar"></div>
+  <div id="elliot-hp" class="hpbar"></div>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+const naoya = document.getElementById("naoya");
+const elliot = document.getElementById("elliot");
+const msg = document.getElementById("msg");
+
+let naoyaHP = 200;
+let elliotHP = 200;
+
+let naoyaX = 200, naoyaY = 300;
+let elliotX = 900, elliotY = 300;
+
+let keys = {};
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function moveNaoya() {
+  let speed = keys["Shift"] ? 10 : 5;
+
+  if (keys["ArrowUp"]) naoyaY -= speed;
+  if (keys["ArrowDown"]) naoyaY += speed;
+  if (keys["ArrowLeft"]) naoyaX -= speed;
+  if (keys["ArrowRight"]) naoyaX += speed;
+
+  naoya.style.left = naoyaX + "px";
+  naoya.style.top = naoyaY + "px";
+}
+
+function elliotAI() {
+  let dx = naoyaX - elliotX;
+  let dy = naoyaY - elliotY;
+  let dist = Math.hypot(dx, dy);
+
+  if (dist > 80) {
+    elliotX += dx / dist * 3;
+    elliotY += dy / dist * 3;
+  } else {
+    if (Math.random() < 0.05) {
+      naoyaHP -= 10;
+    }
+  }
+
+  elliot.style.left = elliotX + "px";
+  elliot.style.top = elliotY + "px";
+}
+
+function attack() {
+  let dx = elliotX - naoyaX;
+  let dy = elliotY - naoyaY;
+  let dist = Math.hypot(dx, dy);
+
+  if (dist < 90) {
+    elliotHP -= 15;
+  }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === " ") attack();
+});
+
+function updateHP() {
+  document.getElementById("naoya-hp").style.width = naoyaHP + "px";
+  document.getElementById("elliot-hp").style.width = elliotHP + "px";
+
+  if (naoyaHP <= 0) endGame("Elliot Wins");
+  if (elliotHP <= 0) endGame("Naoya Wins");
+}
+
+function endGame(text) {
+  msg.textContent = text;
+  msg.style.display = "block";
+  cancelAnimationFrame(loopID);
+}
+
+function loop() {
+  moveNaoya();
+  elliotAI();
+  updateHP();
+  loopID = requestAnimationFrame(loop);
+}
+
+let loopID = requestAnimationFrame(loop);
+</script>
+
+</body>
+</html>
